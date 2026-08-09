@@ -23,13 +23,13 @@ android {
 
   signingConfigs {
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
+      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/lyfstack-personal.jks"
       val keystoreFile = file(keystorePath)
       if (keystoreFile.exists()) {
         storeFile = keystoreFile
-        storePassword = System.getenv("STORE_PASSWORD")
-        keyAlias = "upload"
-        keyPassword = System.getenv("KEY_PASSWORD")
+        storePassword = System.getenv("STORE_PASSWORD") ?: "lyfstack"
+        keyAlias = System.getenv("KEY_ALIAS") ?: "lyfstack"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: "lyfstack"
       }
     }
   }
@@ -97,6 +97,7 @@ dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.work.runtime.ktx)
+  implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
