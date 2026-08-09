@@ -308,6 +308,85 @@ fun ActivityScreen(
             )
         }
 
+        // Manual Sync Card (Moved above Top Apps)
+        Card(
+            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier.fillMaxWidth().testTag("manual_sync_card")
+        ) {
+            Column(modifier = Modifier.padding(14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Sync, contentDescription = null, tint = Teal700, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("MANUAL DATA SYNC", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate900, letterSpacing = 0.8.sp)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    var rangeDropdownExpanded by remember { mutableStateOf(false) }
+                    var selectedSyncRange by remember { mutableStateOf(SyncRange.SINCE_LAST) }
+
+                    // Sync Range Dropdown
+                    Box(modifier = Modifier.weight(1f)) {
+                        OutlinedButton(
+                            onClick = { rangeDropdownExpanded = true },
+                            shape = RoundedCornerShape(6.dp),
+                            modifier = Modifier.fillMaxWidth().height(48.dp).testTag("sync_range_dropdown")
+                        ) {
+                            Text(selectedSyncRange.displayName, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Slate900, maxLines = 1)
+                        }
+                        DropdownMenu(
+                            expanded = rangeDropdownExpanded,
+                            onDismissRequest = { rangeDropdownExpanded = false }
+                        ) {
+                            SyncRange.entries.filter { it != SyncRange.CUSTOM }.forEach { r ->
+                                DropdownMenuItem(
+                                    text = { Text(r.displayName, fontSize = 12.sp) },
+                                    onClick = {
+                                        selectedSyncRange = r
+                                        rangeDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Sync Now Button (White text on Green background as requested)
+                    Button(
+                        onClick = { viewModel.triggerSync(selectedSyncRange) },
+                        enabled = !isSyncing,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = com.example.ui.theme.GreenSync,
+                            contentColor = Color.White,
+                            disabledContainerColor = com.example.ui.theme.GreenSync.copy(alpha = 0.5f),
+                            disabledContentColor = Color.White.copy(alpha = 0.7f)
+                        ),
+                        shape = RoundedCornerShape(6.dp),
+                        modifier = Modifier.weight(1f).height(48.dp).testTag("sync_now_button")
+                    ) {
+                        Icon(Icons.Default.CloudUpload, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(if (isSyncing) "Syncing..." else "Sync Now", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+                }
+
+                if (!syncMessage.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = syncMessage!!,
+                        fontSize = 11.sp,
+                        color = if (syncMessage!!.contains("failed", ignoreCase = true)) Color.Red else Teal700
+                    )
+                }
+            }
+        }
+
         // Top Apps Breakdown
         Card(
             colors = CardDefaults.cardColors(containerColor = CardBackground),
@@ -345,81 +424,6 @@ fun ActivityScreen(
                             )
                         }
                     }
-                }
-            }
-        }
-
-        // Footer Actions Card
-        Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-            shape = RoundedCornerShape(14.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(14.dp)) {
-                Text("FOOTER ACTIONS", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Slate500)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    var rangeDropdownExpanded by remember { mutableStateOf(false) }
-                    var selectedSyncRange by remember { mutableStateOf(SyncRange.SINCE_LAST) }
-
-                    // Sync Range Dropdown
-                    Box(modifier = Modifier.weight(1f)) {
-                        OutlinedButton(
-                            onClick = { rangeDropdownExpanded = true },
-                            shape = RoundedCornerShape(6.dp),
-                            modifier = Modifier.fillMaxWidth().height(48.dp).testTag("sync_range_dropdown")
-                        ) {
-                            Text(selectedSyncRange.displayName, fontSize = 12.sp, color = Slate900)
-                        }
-                        DropdownMenu(
-                            expanded = rangeDropdownExpanded,
-                            onDismissRequest = { rangeDropdownExpanded = false }
-                        ) {
-                            SyncRange.entries.filter { it != SyncRange.CUSTOM }.forEach { r ->
-                                DropdownMenuItem(
-                                    text = { Text(r.displayName) },
-                                    onClick = {
-                                        selectedSyncRange = r
-                                        rangeDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    // Sync Now Button (White text on Green background as requested)
-                    Button(
-                        onClick = { viewModel.triggerSync(selectedSyncRange) },
-                        enabled = !isSyncing,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = com.example.ui.theme.GreenSync,
-                            contentColor = Color.White,
-                            disabledContainerColor = com.example.ui.theme.GreenSync.copy(alpha = 0.5f),
-                            disabledContentColor = Color.White.copy(alpha = 0.7f)
-                        ),
-                        shape = RoundedCornerShape(6.dp),
-                        modifier = Modifier.weight(1f).height(48.dp).testTag("sync_now_button")
-                    ) {
-                        Icon(Icons.Default.CloudUpload, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (isSyncing) "Syncing..." else "Sync Now", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                    }
-                }
-
-                if (!syncMessage.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = syncMessage!!,
-                        fontSize = 11.sp,
-                        color = if (syncMessage!!.contains("failed", ignoreCase = true)) Color.Red else Teal700
-                    )
                 }
             }
         }

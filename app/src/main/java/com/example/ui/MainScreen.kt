@@ -46,6 +46,9 @@ import com.example.ui.theme.Teal100
 import com.example.ui.theme.Teal700
 import com.example.ui.viewmodel.MainViewModel
 
+import androidx.compose.runtime.mutableStateOf
+import com.example.ui.components.SplashScreen
+
 data class NavTabItem(
     val title: String,
     val selectedIcon: ImageVector,
@@ -59,6 +62,7 @@ fun MainScreen(
     modifier: Modifier = Modifier
 ) {
     var selectedTabItem by remember { mutableIntStateOf(0) }
+    var showSplashScreen by remember { mutableStateOf(true) }
 
     val trackingStatus by viewModel.trackingStatus.collectAsState()
     val isSyncing by viewModel.isSyncing.collectAsState()
@@ -161,6 +165,10 @@ fun MainScreen(
                     wsState = wsState,
                     overrides = categoryOverrides
                 )
+            }
+
+            if (showSplashScreen) {
+                SplashScreen(onDismiss = { showSplashScreen = false })
             }
         }
     }

@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 enum class SyncRange(val value: String, val displayName: String) {
-    SINCE_LAST("since_last", "Since Last Sync"),
+    SINCE_LAST("since_last", "Unsynced Data Only"),
     TODAY("today", "Today"),
     WEEK("week", "This Week"),
     MONTH("month", "This Month"),
