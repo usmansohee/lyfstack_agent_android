@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,15 +27,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
-import com.example.ui.theme.Slate500
-import com.example.ui.theme.Slate900
-import com.example.ui.theme.Teal700
 import kotlinx.coroutines.delay
 
 @Composable
@@ -44,6 +40,7 @@ fun SplashScreen(
     modifier: Modifier = Modifier
 ) {
     var visible by remember { mutableStateOf(false) }
+    val scheme = MaterialTheme.colorScheme
 
     LaunchedEffect(Unit) {
         visible = true
@@ -61,7 +58,7 @@ fun SplashScreen(
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .background(Color.White),
+                .background(scheme.background),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -70,8 +67,8 @@ fun SplashScreen(
                 modifier = Modifier.padding(24.dp)
             ) {
                 Surface(
-                    shape = RoundedCornerShape(24.dp),
-                    color = Color.White,
+                    shape = MaterialTheme.shapes.large,
+                    color = scheme.surfaceContainerLowest,
                     shadowElevation = 8.dp,
                     modifier = Modifier.size(120.dp)
                 ) {
@@ -84,7 +81,7 @@ fun SplashScreen(
                             contentDescription = "LyfStack Logo",
                             modifier = Modifier
                                 .fillMaxSize()
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(MaterialTheme.shapes.medium)
                         )
                     }
                 }
@@ -95,7 +92,7 @@ fun SplashScreen(
                     text = "LyfStack",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Slate900,
+                    color = scheme.onBackground,
                     letterSpacing = (-0.5).sp
                 )
 
@@ -105,14 +102,14 @@ fun SplashScreen(
                     text = "AUTOMATED DEVICE ACTIVITY TRACKER",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Teal700,
+                    color = scheme.onSurfaceVariant,
                     letterSpacing = 1.5.sp
                 )
 
                 Spacer(modifier = Modifier.height(48.dp))
 
                 CircularProgressIndicator(
-                    color = Teal700,
+                    color = scheme.primary,
                     strokeWidth = 3.dp,
                     modifier = Modifier.size(24.dp)
                 )
@@ -122,7 +119,7 @@ fun SplashScreen(
                 Text(
                     text = "Initializing workspace...",
                     fontSize = 12.sp,
-                    color = Slate500
+                    color = scheme.onSurfaceVariant
                 )
             }
         }

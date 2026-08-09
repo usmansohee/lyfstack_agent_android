@@ -1,6 +1,7 @@
 package com.example.ui.history
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -32,6 +34,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -53,14 +56,9 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.AppCategory
 import com.example.data.model.SyncRange
 import com.example.data.model.UsageSession
-import com.example.ui.theme.CardBackground
-import com.example.ui.theme.PageBackground
-import com.example.ui.theme.Slate500
-import com.example.ui.theme.Slate600
-import com.example.ui.theme.Slate900
 import com.example.ui.theme.StatusActiveGreen
 import com.example.ui.theme.StatusPausedOrange
-import com.example.ui.theme.Teal700
+import com.example.ui.theme.lyfTextFieldColors
 import com.example.ui.viewmodel.MainViewModel
 
 @Composable
@@ -77,17 +75,16 @@ fun HistoryScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(PageBackground)
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
         // Top Control Card: Range filter + Export CSV + Export JSON
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF1F5F9)),
-            shape = RoundedCornerShape(16.dp),
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth().testTag("history_header_card")
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
@@ -96,7 +93,7 @@ fun HistoryScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("ACTIVITY HISTORY", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Slate500, letterSpacing = 1.2.sp)
+                    Text("Activity history", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Row {
                         OutlinedButton(
                             onClick = { viewModel.exportCsv(context) },
@@ -112,26 +109,27 @@ fun HistoryScreen(
                         Button(
                             onClick = { viewModel.exportJson(context) },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Teal700,
-                                contentColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                             modifier = Modifier.testTag("export_json_button")
                         ) {
-                            Icon(Icons.Default.FileDownload, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                            Icon(Icons.Default.FileDownload, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("JSON", fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("JSON", fontSize = 11.sp, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Range Filter Chips
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     listOf(
                         SyncRange.TODAY to "Today",
@@ -143,14 +141,14 @@ fun HistoryScreen(
                         FilterChip(
                             selected = selectedRange == range,
                             onClick = { viewModel.setRange(range) },
-                            label = { Text(label, fontSize = 11.sp) },
+                            label = { Text(label, style = MaterialTheme.typography.labelLarge) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Teal700,
-                                selectedLabelColor = Color.White,
-                                containerColor = PageBackground,
-                                labelColor = Slate600
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
-                            shape = RoundedCornerShape(6.dp)
+                            shape = MaterialTheme.shapes.large
                         )
                     }
                 }
@@ -159,10 +157,9 @@ fun HistoryScreen(
 
         // Search & Category Dropdown
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-            shape = RoundedCornerShape(12.dp),
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
@@ -172,21 +169,19 @@ fun HistoryScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { viewModel.historySearchQuery.value = it },
-                    placeholder = { Text("Filter app or package...", fontSize = 11.sp, color = Slate500) },
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Slate900),
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Teal700, modifier = Modifier.size(18.dp)) },
+                    placeholder = { Text("Filter app or package...", style = MaterialTheme.typography.bodySmall) },
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
                     singleLine = true,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Slate900,
-                        unfocusedTextColor = Slate900,
-                        focusedPlaceholderColor = Slate500,
-                        unfocusedPlaceholderColor = Slate500,
-                        focusedContainerColor = com.example.ui.theme.InputBackground,
-                        unfocusedContainerColor = com.example.ui.theme.InputBackground,
-                        focusedBorderColor = Teal700,
-                        unfocusedBorderColor = Color(0xFFCBD5E1)
-                    ),
+                    shape = MaterialTheme.shapes.small,
+                    colors = lyfTextFieldColors(),
                     modifier = Modifier.weight(1f).height(52.dp).testTag("history_search_input")
                 )
 
@@ -199,9 +194,9 @@ fun HistoryScreen(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.height(52.dp)
                     ) {
-                        Icon(Icons.Default.FilterList, contentDescription = null, tint = Teal700, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.FilterList, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(categoryFilter, fontSize = 12.sp, color = Slate900, fontWeight = FontWeight.SemiBold)
+                        Text(categoryFilter, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
                     }
                     DropdownMenu(
                         expanded = catDropdownExpanded,
@@ -231,7 +226,7 @@ fun HistoryScreen(
         // Sessions List / Table
         if (sessions.isEmpty()) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = CardBackground),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth().weight(1f)
             ) {
@@ -239,7 +234,7 @@ fun HistoryScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("No usage sessions found for selected filters.", color = Slate500, fontSize = 13.sp)
+                    Text("No usage sessions found for selected filters.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                 }
             }
         } else {
@@ -258,11 +253,11 @@ fun HistoryScreen(
 
 @Composable
 private fun SessionItemCard(session: UsageSession) {
+    val scheme = MaterialTheme.colorScheme
     Card(
-        colors = CardDefaults.cardColors(containerColor = CardBackground),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF1F5F9)),
-        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = scheme.surfaceContainerLowest),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -272,19 +267,28 @@ private fun SessionItemCard(session: UsageSession) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(session.applicationName, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Slate900)
-                    Text(session.processName, fontSize = 11.sp, color = Slate500)
+                    Text(
+                        session.applicationName,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = scheme.onSurface
+                    )
+                    Text(
+                        session.processName,
+                        fontSize = 11.sp,
+                        color = scheme.onSurfaceVariant
+                    )
                 }
 
                 Surface(
-                    color = PageBackground,
-                    shape = RoundedCornerShape(6.dp)
+                    color = scheme.surfaceContainerHigh,
+                    shape = MaterialTheme.shapes.extraSmall
                 ) {
                     Text(
                         text = session.category,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Teal700,
+                        color = scheme.onSurface,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
@@ -308,7 +312,7 @@ private fun SessionItemCard(session: UsageSession) {
                         text = if (session.isOpen) "Open · ${session.lastState}" else session.lastState,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Slate600
+                        color = scheme.onSurfaceVariant
                     )
                 }
 
@@ -316,7 +320,7 @@ private fun SessionItemCard(session: UsageSession) {
                     text = "Active: ${MainViewModel.formatDuration(session.activeDurationSeconds)} | Idle: ${MainViewModel.formatDuration(session.idleDurationSeconds)}",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Slate900
+                    color = scheme.onSurface
                 )
             }
 
@@ -329,7 +333,7 @@ private fun SessionItemCard(session: UsageSession) {
                 Text(
                     text = "Started: ${session.startedAt.take(19).replace('T', ' ')}",
                     fontSize = 10.sp,
-                    color = Slate500
+                    color = scheme.onSurfaceVariant
                 )
                 Text(
                     text = if (session.isSynced) "Synced" else "Pending Sync",

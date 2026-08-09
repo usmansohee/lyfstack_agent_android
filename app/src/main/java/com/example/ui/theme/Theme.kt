@@ -12,39 +12,62 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Teal400,
-    onPrimary = Slate900,
-    primaryContainer = Teal700,
-    onPrimaryContainer = Teal100,
-    secondary = Teal500,
-    onSecondary = Color.White,
-    background = Slate900,
-    onBackground = Slate50,
-    surface = Slate800,
-    onSurface = Slate100,
-    surfaceVariant = Slate700,
-    onSurfaceVariant = Slate300
+    primary = Color(0xFFE5E7EB),
+    onPrimary = Color(0xFF111827),
+    primaryContainer = Color(0xFF374151),
+    onPrimaryContainer = Color(0xFFF3F4F6),
+    secondary = Color(0xFF9CA3AF),
+    onSecondary = Color(0xFF111827),
+    tertiary = Color(0xFF60A5FA),
+    onTertiary = Color(0xFF0B1220),
+    background = Color(0xFF0B0F14),
+    onBackground = Color(0xFFF3F4F6),
+    surface = Color(0xFF151B23),
+    onSurface = Color(0xFFF3F4F6),
+    surfaceVariant = Color(0xFF24303D),
+    onSurfaceVariant = Color(0xFFD1D5DB),
+    // Lifted above background so cards don't melt into the page
+    surfaceContainerLowest = Color(0xFF1A222C),
+    surfaceContainerLow = Color(0xFF1E2733),
+    surfaceContainer = Color(0xFF24303D),
+    surfaceContainerHigh = Color(0xFF2C3A49),
+    surfaceContainerHighest = Color(0xFF364656),
+    outline = Color(0xFF6B7280),
+    outlineVariant = Color(0xFF374151),
+    error = StatusErrorRed,
+    onError = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Teal700,
+    primary = Ink800,
     onPrimary = Color.White,
-    primaryContainer = Teal100,
-    onPrimaryContainer = Teal700,
-    secondary = Teal500,
+    primaryContainer = Slate200,
+    onPrimaryContainer = Ink900,
+    secondary = Slate600,
     onSecondary = Color.White,
+    tertiary = GreenSync,
+    onTertiary = Color.White,
     background = PageBackground,
-    onBackground = Slate900,
-    surface = CardBackground,
-    onSurface = Slate900,
-    surfaceVariant = Slate100,
-    onSurfaceVariant = Slate600
+    onBackground = Ink900,
+    surface = SurfaceContainerLowest,
+    onSurface = Ink900,
+    surfaceVariant = SurfaceContainer,
+    onSurfaceVariant = Slate600,
+    surfaceContainerLowest = SurfaceContainerLowest,
+    surfaceContainerLow = SurfaceContainerLow,
+    surfaceContainer = SurfaceContainer,
+    surfaceContainerHigh = SurfaceContainerHigh,
+    surfaceContainerHighest = SurfaceContainerHighest,
+    outline = Slate300,
+    outlineVariant = Color(0xFFE5E7EB),
+    error = StatusErrorRed,
+    onError = Color.White
 )
 
 @Composable
 fun LyfStackTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Default false to enforce brand teal/slate identity
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -59,7 +82,7 @@ fun LyfStackTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = LyfShapes,
         content = content
     )
 }
-

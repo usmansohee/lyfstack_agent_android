@@ -274,7 +274,7 @@ class TrackingService : Service() {
         return NotificationCompat.Builder(this, LyfStackApplication.NOTIFICATION_CHANNEL_ID)
             .setContentTitle("LyfStack Agent (Android)")
             .setContentText(contentText)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_stat_lyfstack)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)

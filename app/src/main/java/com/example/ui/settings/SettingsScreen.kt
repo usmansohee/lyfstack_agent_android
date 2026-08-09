@@ -41,6 +41,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -70,16 +71,9 @@ import com.example.data.model.CategoryOverride
 import com.example.data.model.WsConnectionState
 import com.example.data.repository.AgentSettings
 import com.example.service.TrackingService
-import com.example.ui.theme.CardBackground
-import com.example.ui.theme.InputBackground
-import com.example.ui.theme.PageBackground
-import com.example.ui.theme.Slate100
-import com.example.ui.theme.Slate500
-import com.example.ui.theme.Slate900
 import com.example.ui.theme.StatusActiveGreen
 import com.example.ui.theme.StatusPausedOrange
-import com.example.ui.theme.Teal100
-import com.example.ui.theme.Teal700
+import com.example.ui.theme.lyfTextFieldColors
 import com.example.ui.viewmodel.MainViewModel
 
 private fun isIgnoringBatteryOptimizations(context: Context): Boolean {
@@ -132,23 +126,13 @@ fun SettingsScreen(
         }
     }
 
-    val textFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedTextColor = Slate900,
-        unfocusedTextColor = Slate900,
-        disabledTextColor = Slate500,
-        focusedPlaceholderColor = Slate500,
-        unfocusedPlaceholderColor = Slate500,
-        focusedContainerColor = InputBackground,
-        unfocusedContainerColor = InputBackground,
-        disabledContainerColor = Slate100,
-        focusedBorderColor = Teal700,
-        unfocusedBorderColor = Color(0xFFCBD5E1)
-    )
+    val scheme = MaterialTheme.colorScheme
+    val textFieldColors = lyfTextFieldColors()
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(PageBackground)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -156,14 +140,14 @@ fun SettingsScreen(
 
         // Device Summary Strip
         Surface(
-            color = Slate900,
-            shape = RoundedCornerShape(12.dp),
+            color = scheme.surfaceContainerHigh,
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth().testTag("device_summary_strip")
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Text(
                     text = "${Build.MANUFACTURER.replaceFirstChar { it.uppercase() }} ${Build.MODEL}",
-                    color = Color.White,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp
                 )
@@ -172,29 +156,28 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("First Sync: ${MainViewModel.formatTimestamp(settings.firstSyncAt)}", color = Color.White.copy(alpha = 0.75f), fontSize = 11.sp)
-                    Text("Last Sync: ${MainViewModel.formatTimestamp(settings.lastSyncAt)}", color = Color.White.copy(alpha = 0.75f), fontSize = 11.sp)
+                    Text("First Sync: ${MainViewModel.formatTimestamp(settings.firstSyncAt)}", color = scheme.onSurfaceVariant, fontSize = 11.sp)
+                    Text("Last Sync: ${MainViewModel.formatTimestamp(settings.lastSyncAt)}", color = scheme.onSurfaceVariant, fontSize = 11.sp)
                 }
             }
         }
 
         // Permissions & Background Guidance Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-            shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(shape = CircleShape, color = Teal100, modifier = Modifier.size(28.dp)) {
+                    Surface(shape = CircleShape, color = scheme.surfaceContainerHighest, modifier = Modifier.size(28.dp)) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Security, contentDescription = null, tint = Teal700, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.Security, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(16.dp))
                         }
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("PERMISSIONS & BATTERY GUIDANCE", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Slate900, letterSpacing = 1.1.sp)
+                    Text("PERMISSIONS & BATTERY GUIDANCE", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = scheme.onSurface, letterSpacing = 1.1.sp)
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -206,13 +189,13 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Usage Access (Required)", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Slate900)
-                        Text("Grants app usage statistics tracking", fontSize = 11.sp, color = Slate500)
+                        Text("Usage Access (Required)", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = scheme.onSurface)
+                        Text("Grants app usage statistics tracking", fontSize = 11.sp, color = scheme.onSurfaceVariant)
                     }
                     if (hasUsageAccess) {
                         Surface(
                             color = StatusActiveGreen.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = MaterialTheme.shapes.small
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
@@ -226,10 +209,10 @@ fun SettingsScreen(
                     } else {
                         OutlinedButton(
                             onClick = { context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)) },
-                            shape = RoundedCornerShape(8.dp),
+                            shape = MaterialTheme.shapes.small,
                             modifier = Modifier.testTag("open_usage_settings_button")
                         ) {
-                            Text("Grant", fontSize = 12.sp, color = Teal700, fontWeight = FontWeight.Bold)
+                            Text("Grant", fontSize = 12.sp, color = scheme.primary, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -243,7 +226,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Unrestricted Battery & Autostart", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Slate900)
+                        Text("Unrestricted Battery & Autostart", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = scheme.onSurface)
                         Text(
                             if (isBatteryUnrestricted) "Allowed: Unrestricted background execution active"
                             else "Restricted: Click Configure to allow continuous tracking",
@@ -254,7 +237,7 @@ fun SettingsScreen(
                     if (isBatteryUnrestricted) {
                         Surface(
                             color = StatusActiveGreen.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = MaterialTheme.shapes.small
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
@@ -276,7 +259,7 @@ fun SettingsScreen(
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = StatusPausedOrange, contentColor = Color.White),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = MaterialTheme.shapes.small
                         ) {
                             Text("Allow", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         }
@@ -287,21 +270,20 @@ fun SettingsScreen(
 
         // Auto Sync Options Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-            shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(shape = CircleShape, color = Teal100, modifier = Modifier.size(28.dp)) {
+                    Surface(shape = CircleShape, color = scheme.surfaceContainerHighest, modifier = Modifier.size(28.dp)) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Sync, contentDescription = null, tint = Teal700, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.Sync, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(16.dp))
                         }
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("HTTPS AUTO SYNC OPTIONS", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Slate900, letterSpacing = 1.1.sp)
+                    Text("HTTPS AUTO SYNC OPTIONS", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = scheme.onSurface, letterSpacing = 1.1.sp)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -311,11 +293,11 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Auto Sync Enabled", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Slate900)
+                    Text("Auto Sync Enabled", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = scheme.onSurface)
                     Switch(
                         checked = autoSyncEnabled,
                         onCheckedChange = { autoSyncEnabled = it },
-                        colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Teal700),
+                        colors = SwitchDefaults.colors(checkedThumbColor = scheme.onPrimary, checkedTrackColor = scheme.primary),
                         modifier = Modifier.testTag("auto_sync_switch")
                     )
                 }
@@ -328,15 +310,15 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Sync Interval", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Slate900)
+                    Text("Sync Interval", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = scheme.onSurface)
                     var intervalExpanded by remember { mutableStateOf(false) }
                     Box {
                         OutlinedButton(
                             onClick = { intervalExpanded = true },
-                            shape = RoundedCornerShape(8.dp),
+                            shape = MaterialTheme.shapes.small,
                             modifier = Modifier.height(44.dp)
                         ) {
-                            Text("$syncIntervalMinutes minutes", fontSize = 12.sp, color = Slate900, fontWeight = FontWeight.SemiBold)
+                            Text("$syncIntervalMinutes minutes", fontSize = 12.sp, color = scheme.onSurface, fontWeight = FontWeight.SemiBold)
                         }
                         DropdownMenu(
                             expanded = intervalExpanded,
@@ -358,14 +340,14 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // HTTPS POST Endpoint URL
-                Text("Sync Endpoint (HTTPS POST URL)", fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Slate900)
+                Text("Sync Endpoint (HTTPS POST URL)", fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = scheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = syncEndpointUrl,
                     onValueChange = { syncEndpointUrl = it },
-                    placeholder = { Text("https://api.lyfstack.app/api/v1/device-activity/sync", fontSize = 11.sp, color = Slate500) },
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Slate900),
-                    shape = RoundedCornerShape(8.dp),
+                    placeholder = { Text("https://api.lyfstack.app/api/v1/device-activity/sync", fontSize = 11.sp, color = scheme.onSurfaceVariant) },
+                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = scheme.onSurface),
+                    shape = MaterialTheme.shapes.small,
                     colors = textFieldColors,
                     modifier = Modifier.fillMaxWidth().testTag("sync_endpoint_input")
                 )
@@ -374,10 +356,9 @@ fun SettingsScreen(
 
         // WebSocket Control Connection Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-            shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
@@ -387,22 +368,22 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(shape = CircleShape, color = Teal100, modifier = Modifier.size(28.dp)) {
+                        Surface(shape = CircleShape, color = scheme.surfaceContainerHighest, modifier = Modifier.size(28.dp)) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Router, contentDescription = null, tint = Teal700, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Default.Router, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(16.dp))
                             }
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("DEVICE CONNECTION (WebSocket)", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Slate900, letterSpacing = 1.1.sp)
+                        Text("DEVICE CONNECTION (WebSocket)", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = scheme.onSurface, letterSpacing = 1.1.sp)
                     }
 
                     // Status Pill
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
+                        shape = MaterialTheme.shapes.small,
                         color = when (wsState) {
                             WsConnectionState.ONLINE -> StatusActiveGreen.copy(alpha = 0.15f)
                             WsConnectionState.CONNECTING, WsConnectionState.RECONNECTING -> StatusPausedOrange.copy(alpha = 0.15f)
-                            WsConnectionState.OFF -> Slate100
+                            WsConnectionState.OFF -> scheme.surfaceContainerHighest
                         }
                     ) {
                         Text(
@@ -412,7 +393,7 @@ fun SettingsScreen(
                             color = when (wsState) {
                                 WsConnectionState.ONLINE -> StatusActiveGreen
                                 WsConnectionState.CONNECTING, WsConnectionState.RECONNECTING -> StatusPausedOrange
-                                WsConnectionState.OFF -> Slate500
+                                WsConnectionState.OFF -> scheme.onSurfaceVariant
                             },
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                         )
@@ -426,25 +407,25 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Enable WebSocket Control Connection", fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Slate900)
+                    Text("Enable WebSocket Control Connection", fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = scheme.onSurface)
                     Switch(
                         checked = wsEnabled,
                         onCheckedChange = { wsEnabled = it },
-                        colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = Teal700),
+                        colors = SwitchDefaults.colors(checkedThumbColor = scheme.onPrimary, checkedTrackColor = scheme.primary),
                         modifier = Modifier.testTag("ws_enabled_switch")
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text("WebSocket URL (wss://)", fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Slate900)
+                Text("WebSocket URL (wss://)", fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = scheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = wsUrl,
                     onValueChange = { wsUrl = it },
-                    placeholder = { Text("wss://api.lyfstack.app/device-connection", fontSize = 11.sp, color = Slate500) },
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Slate900),
-                    shape = RoundedCornerShape(8.dp),
+                    placeholder = { Text("wss://api.lyfstack.app/device-connection", fontSize = 11.sp, color = scheme.onSurfaceVariant) },
+                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = scheme.onSurface),
+                    shape = MaterialTheme.shapes.small,
                     enabled = wsEnabled,
                     colors = textFieldColors,
                     modifier = Modifier.fillMaxWidth().testTag("ws_url_input")
@@ -452,14 +433,14 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text("WebSocket Auth Token (Optional)", fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = Slate900)
+                Text("WebSocket Auth Token (Optional)", fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = scheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = wsToken,
                     onValueChange = { wsToken = it },
-                    placeholder = { Text("Token...", fontSize = 11.sp, color = Slate500) },
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Slate900),
-                    shape = RoundedCornerShape(8.dp),
+                    placeholder = { Text("Token...", fontSize = 11.sp, color = scheme.onSurfaceVariant) },
+                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = scheme.onSurface),
+                    shape = MaterialTheme.shapes.small,
                     enabled = wsEnabled,
                     colors = textFieldColors,
                     modifier = Modifier.fillMaxWidth().testTag("ws_token_input")
@@ -469,32 +450,31 @@ fun SettingsScreen(
 
         // Ignore List (Multiline Packages) Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-            shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(shape = CircleShape, color = Teal100, modifier = Modifier.size(28.dp)) {
+                    Surface(shape = CircleShape, color = scheme.surfaceContainerHighest, modifier = Modifier.size(28.dp)) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.List, contentDescription = null, tint = Teal700, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.List, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(16.dp))
                         }
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("IGNORE LIST (PACKAGES TO EXCLUDE)", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Slate900, letterSpacing = 1.1.sp)
+                    Text("IGNORE LIST (PACKAGES TO EXCLUDE)", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = scheme.onSurface, letterSpacing = 1.1.sp)
                 }
                 Spacer(modifier = Modifier.height(6.dp))
-                Text("Enter package names (one per line) to exclude from usage tracking.", fontSize = 11.sp, color = Slate500)
+                Text("Enter package names (one per line) to exclude from usage tracking.", fontSize = 11.sp, color = scheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = ignoreListRaw,
                     onValueChange = { ignoreListRaw = it },
                     minLines = 3,
                     maxLines = 6,
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Slate900),
-                    shape = RoundedCornerShape(8.dp),
+                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = scheme.onSurface),
+                    shape = MaterialTheme.shapes.small,
                     colors = textFieldColors,
                     modifier = Modifier.fillMaxWidth().testTag("ignore_list_input")
                 )
@@ -503,21 +483,20 @@ fun SettingsScreen(
 
         // Manual Category Overrides Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-            shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(shape = CircleShape, color = Teal100, modifier = Modifier.size(28.dp)) {
+                    Surface(shape = CircleShape, color = scheme.surfaceContainerHighest, modifier = Modifier.size(28.dp)) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Category, contentDescription = null, tint = Teal700, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.Category, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(16.dp))
                         }
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("CATEGORY OVERRIDES (PACKAGE → CATEGORY)", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Slate900, letterSpacing = 1.1.sp)
+                    Text("CATEGORY OVERRIDES (PACKAGE → CATEGORY)", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = scheme.onSurface, letterSpacing = 1.1.sp)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -531,10 +510,10 @@ fun SettingsScreen(
                     OutlinedTextField(
                         value = newPkgName,
                         onValueChange = { newPkgName = it },
-                        placeholder = { Text("com.example.app", fontSize = 11.sp, color = Slate500) },
-                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = Slate900),
+                        placeholder = { Text("com.example.app", fontSize = 11.sp, color = scheme.onSurfaceVariant) },
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, color = scheme.onSurface),
                         singleLine = true,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = MaterialTheme.shapes.small,
                         colors = textFieldColors,
                         modifier = Modifier.weight(1.5f).height(48.dp).testTag("new_pkg_override_input")
                     )
@@ -543,10 +522,10 @@ fun SettingsScreen(
                     Box(modifier = Modifier.weight(1f)) {
                         OutlinedButton(
                             onClick = { catMenuExpanded = true },
-                            shape = RoundedCornerShape(8.dp),
+                            shape = MaterialTheme.shapes.small,
                             modifier = Modifier.fillMaxWidth().height(48.dp)
                         ) {
-                            Text(newCatSelected, fontSize = 11.sp, maxLines = 1, color = Slate900)
+                            Text(newCatSelected, fontSize = 11.sp, maxLines = 1, color = scheme.onSurface)
                         }
                         DropdownMenu(
                             expanded = catMenuExpanded,
@@ -574,12 +553,12 @@ fun SettingsScreen(
                         modifier = Modifier.size(48.dp).testTag("add_override_button")
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = Teal700,
+                            shape = MaterialTheme.shapes.small,
+                            color = scheme.primary,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Add, contentDescription = "Add Override", tint = Color.White, modifier = Modifier.size(20.dp))
+                                Icon(Icons.Default.Add, contentDescription = "Add Override", tint = scheme.onPrimary, modifier = Modifier.size(20.dp))
                             }
                         }
                     }
@@ -588,7 +567,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 if (overrides.isEmpty()) {
-                    Text("No manual category overrides configured.", fontSize = 12.sp, color = Slate500)
+                    Text("No manual category overrides configured.", fontSize = 12.sp, color = scheme.onSurfaceVariant)
                 } else {
                     overrides.forEach { override ->
                         Row(
@@ -597,8 +576,8 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(override.packageName, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Slate900)
-                                Text("Category: ${override.category}", fontSize = 11.sp, color = Teal700)
+                                Text(override.packageName, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = scheme.onSurface)
+                                Text("Category: ${override.category}", fontSize = 11.sp, color = scheme.primary)
                             }
                             IconButton(
                                 onClick = { viewModel.removeCategoryOverride(override.packageName) }
@@ -624,13 +603,13 @@ fun SettingsScreen(
                     ignoreListRaw = ignoreListRaw
                 )
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Teal700, contentColor = Color.White),
-            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = scheme.primary, contentColor = scheme.onPrimary),
+            shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth().height(48.dp).testTag("save_settings_button")
         ) {
-            Icon(Icons.Default.Save, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+            Icon(Icons.Default.Save, contentDescription = null, tint = scheme.onPrimary, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Save All Settings", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text("Save All Settings", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = scheme.onPrimary)
         }
     }
 }

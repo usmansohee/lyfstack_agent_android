@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -8,7 +9,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,9 +22,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.rounded.Sync
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,19 +36,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.R
-import com.example.ui.theme.Slate800
-import com.example.ui.theme.Slate900
 import com.example.ui.theme.StatusActiveGreen
 import com.example.ui.theme.StatusPausedOrange
-import com.example.ui.theme.Teal700
 
 @Composable
 fun HeaderBar(
@@ -54,104 +50,102 @@ fun HeaderBar(
     onSyncNow: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val gradientBrush = Brush.linearGradient(
-        colors = listOf(Slate900, Slate800, Teal700)
+    val scheme = MaterialTheme.colorScheme
+    val pulseDot by animateColorAsState(
+        targetValue = if (isTrackingActive) StatusActiveGreen else StatusPausedOrange,
+        label = "headerPulse"
     )
 
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(4.dp, androidx.compose.ui.graphics.RectangleShape),
-        shape = androidx.compose.ui.graphics.RectangleShape,
-        color = Color.Transparent
+        modifier = modifier.fillMaxWidth(),
+        color = scheme.surfaceContainerLowest,
+        shadowElevation = 0.dp
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(brush = gradientBrush)
-                .statusBarsPadding()
-                .padding(horizontal = 24.dp, vertical = 20.dp)
-        ) {
+        Column {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 20.dp, vertical = 14.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(
-                        text = "LyfStack",
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = (-0.5).sp
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.app_logo),
+                        contentDescription = "LyfStack",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(10.dp))
                     )
-                    Text(
-                        text = "AGENT.ANDROID • DEVICE ALPHA",
-                        color = Color(0xFF5EEAD4),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.8.sp
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            text = "LyfStack",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = scheme.onSurface
+                        )
+                        Text(
+                            text = "Android agent",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = scheme.onSurfaceVariant
+                        )
+                    }
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Glassmorphism Status Badge
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = Color.White.copy(alpha = 0.12f),
-                                shape = RoundedCornerShape(50)
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = Color.White.copy(alpha = 0.15f),
-                                shape = RoundedCornerShape(50)
-                            )
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(
+                        shape = MaterialTheme.shapes.large,
+                        color = scheme.surfaceContainer
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Box(
                                 modifier = Modifier
-                                    .size(8.dp)
-                                    .shadow(4.dp, CircleShape)
-                                    .background(
-                                        color = if (isTrackingActive) Color(0xFF34D399) else StatusPausedOrange,
-                                        shape = CircleShape
-                                    )
+                                    .size(7.dp)
+                                    .background(pulseDot, CircleShape)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(7.dp))
                             Text(
-                                text = if (isTrackingActive) "LIVE" else "PAUSED",
-                                color = Color.White,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.2.sp
+                                text = if (isTrackingActive) "Live" else "Paused",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = scheme.onSurface
                             )
                         }
                     }
-
-                    Spacer(modifier = Modifier.width(8.dp))
 
                     val infiniteTransition = rememberInfiniteTransition(label = "SyncRotation")
                     val rotationAngle by infiniteTransition.animateFloat(
                         initialValue = 0f,
                         targetValue = 360f,
                         animationSpec = infiniteRepeatable(
-                            animation = tween(durationMillis = 1000, easing = LinearEasing),
+                            animation = tween(durationMillis = 900, easing = LinearEasing),
                             repeatMode = RepeatMode.Restart
                         ),
                         label = "SyncRotationAngle"
                     )
 
-                    IconButton(
+                    FilledIconButton(
                         onClick = onSyncNow,
                         enabled = !isSyncing,
-                        modifier = Modifier.size(36.dp)
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = scheme.surfaceContainerHigh,
+                            contentColor = scheme.onSurface,
+                            disabledContainerColor = scheme.surfaceContainer,
+                            disabledContentColor = scheme.onSurfaceVariant
+                        )
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Refresh,
+                            imageVector = Icons.Rounded.Sync,
                             contentDescription = "Sync Now",
-                            tint = Color.White,
                             modifier = Modifier
                                 .size(20.dp)
                                 .rotate(if (isSyncing) rotationAngle else 0f)
@@ -159,7 +153,7 @@ fun HeaderBar(
                     }
                 }
             }
+            HorizontalDivider(color = scheme.outlineVariant)
         }
     }
 }
-

@@ -45,16 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.WsConnectionState
 import com.example.data.repository.AgentSettings
-import com.example.ui.theme.CardBackground
-import com.example.ui.theme.PageBackground
-import com.example.ui.theme.Slate500
-import com.example.ui.theme.Slate800
-import com.example.ui.theme.Slate900
 import com.example.ui.theme.StatusActiveGreen
 import com.example.ui.theme.StatusErrorRed
 import com.example.ui.theme.StatusPausedOrange
-import com.example.ui.theme.Teal500
-import com.example.ui.theme.Teal700
 import com.example.ui.viewmodel.MainViewModel
 
 @Composable
@@ -73,101 +66,108 @@ fun DeviceScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(PageBackground)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        // Dark Teal Gradient Card
+        // Device identity card
         Card(
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF1F5F9)),
+            shape = MaterialTheme.shapes.medium,
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             modifier = Modifier.fillMaxWidth().testTag("device_header_card")
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(Slate900, Teal700)
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.PhoneAndroid,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(28.dp)
                         )
-                    )
-                    .padding(16.dp)
-            ) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.PhoneAndroid, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Column {
-                                Text(deviceName, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 16.sp)
-                                Text("Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
-                            }
-                        }
-
-                        // WS Connection status badge
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = when (wsState) {
-                                WsConnectionState.ONLINE -> StatusActiveGreen.copy(alpha = 0.25f)
-                                WsConnectionState.CONNECTING, WsConnectionState.RECONNECTING -> StatusPausedOrange.copy(alpha = 0.25f)
-                                WsConnectionState.OFF -> Color.White.copy(alpha = 0.15f)
-                            }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .background(
-                                            when (wsState) {
-                                                WsConnectionState.ONLINE -> StatusActiveGreen
-                                                WsConnectionState.CONNECTING, WsConnectionState.RECONNECTING -> StatusPausedOrange
-                                                WsConnectionState.OFF -> Color.Gray
-                                            },
-                                            CircleShape
-                                        )
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "WS: ${wsState.label}",
-                                    color = Color.White,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                deviceName,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text("Device ID: ${settings.deviceId}", fontSize = 11.sp, color = Color.White.copy(alpha = 0.85f))
-                    Text("Agent Version: 1.0.0 (LyfStack.Agent.Android)", fontSize = 11.sp, color = Color.White.copy(alpha = 0.85f))
+                    Surface(
+                        shape = MaterialTheme.shapes.large,
+                        color = when (wsState) {
+                            WsConnectionState.ONLINE -> StatusActiveGreen.copy(alpha = 0.14f)
+                            WsConnectionState.CONNECTING, WsConnectionState.RECONNECTING -> StatusPausedOrange.copy(alpha = 0.14f)
+                            WsConnectionState.OFF -> MaterialTheme.colorScheme.surfaceContainer
+                        }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .background(
+                                        when (wsState) {
+                                            WsConnectionState.ONLINE -> StatusActiveGreen
+                                            WsConnectionState.CONNECTING, WsConnectionState.RECONNECTING -> StatusPausedOrange
+                                            WsConnectionState.OFF -> Color.Gray
+                                        },
+                                        CircleShape
+                                    )
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "WS: ${wsState.label}",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    "Device ID: ${settings.deviceId}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    "Agent Version: 1.0.0 (LyfStack.Agent.Android)",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
         // Technical Specs Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF1F5F9)),
-            shape = RoundedCornerShape(16.dp),
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.DeveloperBoard, contentDescription = null, tint = Teal700, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.DeveloperBoard, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("HARDWARE & SYSTEM", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Slate900, letterSpacing = 1.1.sp)
+                    Text("HARDWARE & SYSTEM", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface, letterSpacing = 1.1.sp)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -186,17 +186,16 @@ fun DeviceScreen(
 
         // Agent Metadata Card
         Card(
-            colors = CardDefaults.cardColors(containerColor = CardBackground),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF1F5F9)),
-            shape = RoundedCornerShape(16.dp),
+                        shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Info, contentDescription = null, tint = Teal700, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("AGENT & SYNC METADATA", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Slate900, letterSpacing = 1.1.sp)
+                    Text("AGENT & SYNC METADATA", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface, letterSpacing = 1.1.sp)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -223,8 +222,8 @@ private fun DetailRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, fontSize = 12.sp, color = Slate500, fontWeight = FontWeight.Medium)
-        Text(value, fontSize = 12.sp, color = Slate900, fontWeight = FontWeight.SemiBold)
+        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
+        Text(value, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
     }
 }
 
@@ -235,19 +234,18 @@ private fun DetailRowMultiline(label: String, value: String) {
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
-        Text(label, fontSize = 12.sp, color = Slate500, fontWeight = FontWeight.Medium)
+        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
         Spacer(modifier = Modifier.height(3.dp))
         Surface(
-            color = PageBackground,
-            shape = RoundedCornerShape(6.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCBD5E1)),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            shape = MaterialTheme.shapes.extraSmall,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = value,
                 fontSize = 11.sp,
                 fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                color = Slate900,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
             )

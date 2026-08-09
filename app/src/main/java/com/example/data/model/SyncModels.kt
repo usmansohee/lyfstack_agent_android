@@ -3,14 +3,14 @@ package com.example.data.model
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-enum class SyncRange(val value: String, val displayName: String) {
-    SINCE_LAST("since_last", "Unsynced Data Only"),
+enum class SyncRange(val value: String, val displayName: String, val shortLabel: String = displayName) {
+    SINCE_LAST("since_last", "Unsynced Data Only", "Unsynced only"),
     TODAY("today", "Today"),
-    WEEK("week", "This Week"),
-    MONTH("month", "This Month"),
-    YEAR("year", "This Year"),
-    ALL("all", "All Time"),
-    CUSTOM("custom", "Custom Range");
+    WEEK("week", "This Week", "This week"),
+    MONTH("month", "This Month", "This month"),
+    YEAR("year", "This Year", "This year"),
+    ALL("all", "All Time", "All time"),
+    CUSTOM("custom", "Custom Range", "Custom");
 
     companion object {
         fun fromString(str: String?): SyncRange {

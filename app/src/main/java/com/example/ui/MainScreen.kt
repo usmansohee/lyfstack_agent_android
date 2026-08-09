@@ -1,7 +1,12 @@
 package com.example.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
@@ -17,6 +22,7 @@ import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -27,27 +33,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.ui.activity.ActivityScreen
 import com.example.ui.components.HeaderBar
+import com.example.ui.components.SplashScreen
 import com.example.ui.device.DeviceScreen
 import com.example.ui.history.HistoryScreen
 import com.example.ui.settings.SettingsScreen
-import com.example.ui.theme.Slate900
-import com.example.ui.theme.Teal100
-import com.example.ui.theme.Teal700
 import com.example.ui.viewmodel.MainViewModel
-
-import androidx.compose.runtime.mutableStateOf
-import com.example.ui.components.SplashScreen
 
 data class NavTabItem(
     val title: String,
@@ -83,6 +82,7 @@ fun MainScreen(
     )
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             HeaderBar(
                 isTrackingActive = trackingStatus.isTrackingActive,
@@ -92,13 +92,13 @@ fun MainScreen(
         },
         bottomBar = {
             Surface(
-                color = Color.White,
-                tonalElevation = 4.dp,
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                tonalElevation = 2.dp,
+                shadowElevation = 8.dp,
                 modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)
             ) {
                 NavigationBar(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                     tonalElevation = 0.dp,
                     modifier = Modifier.testTag("bottom_nav_bar")
                 ) {
@@ -115,18 +115,16 @@ fun MainScreen(
                             },
                             label = {
                                 Text(
-                                    text = item.title.uppercase(),
-                                    fontSize = 10.sp,
-                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold,
-                                    letterSpacing = 0.8.sp
+                                    text = item.title,
+                                    style = MaterialTheme.typography.labelMedium
                                 )
                             },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Teal700,
-                                selectedTextColor = Teal700,
-                                indicatorColor = Teal100,
-                                unselectedIconColor = Slate900.copy(alpha = 0.4f),
-                                unselectedTextColor = Slate900.copy(alpha = 0.4f)
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
                             modifier = Modifier.testTag(item.testTag)
                         )
@@ -141,30 +139,44 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (selectedTabItem) {
-                0 -> ActivityScreen(
-                    viewModel = viewModel,
-                    trackingStatus = trackingStatus,
-                    rangeStats = rangeStats,
-                    topApps = topApps,
-                    categoryStats = categoryStats,
-                    settings = settings,
-                    selectedRange = selectedRange,
-                    isSyncing = isSyncing,
-                    syncMessage = syncMessage
-                )
-                1 -> HistoryScreen(viewModel = viewModel)
-                2 -> DeviceScreen(
-                    viewModel = viewModel,
-                    settings = settings,
-                    wsState = wsState
-                )
-                3 -> SettingsScreen(
-                    viewModel = viewModel,
-                    settings = settings,
-                    wsState = wsState,
-                    overrides = categoryOverrides
-                )
+            AnimatedContent(
+                targetState = selectedTabItem,
+                transitionSpec = {
+                    if (targetState > initialState) {
+                        (slideInHorizontally { it / 4 } + fadeIn()) togetherWith
+                            (slideOutHorizontally { -it / 4 } + fadeOut())
+                    } else {
+                        (slideInHorizontally { -it / 4 } + fadeIn()) togetherWith
+                            (slideOutHorizontally { it / 4 } + fadeOut())
+                    }
+                },
+                label = "tabContent"
+            ) { tab ->
+                when (tab) {
+                    0 -> ActivityScreen(
+                        viewModel = viewModel,
+                        trackingStatus = trackingStatus,
+                        rangeStats = rangeStats,
+                        topApps = topApps,
+                        categoryStats = categoryStats,
+                        settings = settings,
+                        selectedRange = selectedRange,
+                        isSyncing = isSyncing,
+                        syncMessage = syncMessage
+                    )
+                    1 -> HistoryScreen(viewModel = viewModel)
+                    2 -> DeviceScreen(
+                        viewModel = viewModel,
+                        settings = settings,
+                        wsState = wsState
+                    )
+                    3 -> SettingsScreen(
+                        viewModel = viewModel,
+                        settings = settings,
+                        wsState = wsState,
+                        overrides = categoryOverrides
+                    )
+                }
             }
 
             if (showSplashScreen) {
