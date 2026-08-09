@@ -75,7 +75,7 @@ fun DeviceScreen(
             .fillMaxSize()
             .background(PageBackground)
             .verticalScroll(scrollState)
-            .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 88.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 

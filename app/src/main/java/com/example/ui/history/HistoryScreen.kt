@@ -244,7 +244,7 @@ fun HistoryScreen(
             }
         } else {
             LazyColumn(
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 96.dp),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 12.dp),
                 modifier = Modifier.fillMaxWidth().weight(1f).testTag("sessions_lazy_column"),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
